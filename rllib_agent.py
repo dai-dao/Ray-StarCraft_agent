@@ -71,7 +71,7 @@ class RLLibAgent(Agent):
     _default_config = DEFAULT_CONFIG
 
 
-    def __init(self):
+    def _init(self):
         if self.config["apex"]:
             self.optimizer = ApexOptimizer.make(
                 AgentEvaluator, [self.config, self.env_creator],

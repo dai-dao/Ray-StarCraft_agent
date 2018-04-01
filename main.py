@@ -17,7 +17,7 @@ if __name__ == '__main__':
 
     run_experiments({
         "rainbow-apex-pong": {
-            "run": "Rainbow",
+            "run": "Agent",
             "env": "PongNoFrameskip-v4",
             "resources": {
                 "cpu": lambda spec: spec.config.num_workers,

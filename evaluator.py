@@ -12,9 +12,21 @@ from ray.rllib.utils.atari_wrappers import wrap_deepmind
 from ray.rllib.utils.compression import pack
 
 from agent import Agent
-from env import Env
-from main import parse_args
-from test import from_gym
+# from env import Env
+from config import parse_args
+
+
+
+def from_gym(obs, volatile=False):
+    obs = obs.transpose((2,0,1))  # channel dim first
+    if obs.dtype == np.uint8:
+        # PyTorch doesn't support byte tensors, so convert to float
+        obs = obs.astype(np.float32) / 255.0
+    tensor = torch.from_numpy(obs)
+    if torch.cuda.is_available():
+        return Variable(tensor.cuda(), volatile)
+    else:
+        return Variable(tensor, volatile)
 
 
 class AgentEvaluator(PolicyEvaluator):
@@ -83,7 +95,7 @@ class AgentEvaluator(PolicyEvaluator):
 
     
     def apply_gradients(self, grads):
-        return self.torch_agent.apply(grads)
+        return self.torch_agent.apply_grad(grads)
 
     
     def compute_apply(self, samples):
