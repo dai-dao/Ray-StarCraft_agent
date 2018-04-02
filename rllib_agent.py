@@ -55,7 +55,7 @@ DEFAULT_CONFIG = dict(
     train_batch_size=32,
 
     # === Parallelism ===
-    num_workers=16,
+    num_workers=2,
     # Max number of steps to delay synchronizing weights of workers.
     max_weight_sync_delay=400,
     # Number of Apex replay shards.

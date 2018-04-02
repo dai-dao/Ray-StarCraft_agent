@@ -19,19 +19,19 @@ if __name__ == '__main__':
         "rainbow-apex-pong": {
             "run": "Agent",
             "env": "PongNoFrameskip-v4",
-            "resources": {
-                "cpu": lambda spec: spec.config.num_workers,
+            "trial_resources": {
+                "cpu": 1,
                 "gpu": 1,
             },
             "config": {
-                "num_workers": multiprocessing.cpu_count() if smoke_test else 64,
+                "num_workers": 1,
                 "apex": True,
                 "lr": .0001,
                 "gamma": 0.99,
                 "sample_batch_size": 50,
                 "max_weight_sync_delay": 400,
                 "train_batch_size": 512,
-                "num_replay_buffer_shards": 4,
+                "num_replay_buffer_shards": 1,
                 "learning_starts": 1000 if smoke_test else 50000,
                 "buffer_size": 50000 if smoke_test else 2000000,
                 "target_network_update_freq": 1000 if smoke_test else 50000,
