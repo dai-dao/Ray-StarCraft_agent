@@ -13,7 +13,7 @@ if __name__ == '__main__':
     if smoke_test:
         ray.init(num_gpus=1)
     else:
-        ray.init(redis_address="localhost:6379")
+        ray.init(redis_address="localhost:36557")
 
     run_experiments({
         "rainbow-apex-pong": {
