@@ -38,4 +38,4 @@ if __name__ == '__main__':
                 "timesteps_per_iteration": 1000 if smoke_test else 25000,
             },
         },
-    })
+    }, with_server=True, server_port=4321)
