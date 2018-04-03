@@ -20,11 +20,11 @@ if __name__ == '__main__':
             "run": "Agent",
             "env": "PongNoFrameskip-v4",
             "trial_resources": {
-                "cpu": 1,
+                "cpu": 4,
                 "gpu": 1,
             },
             "config": {
-                "num_workers": 1,
+                "num_workers": 4,
                 "apex": True,
                 "lr": .0001,
                 "gamma": 0.99,
