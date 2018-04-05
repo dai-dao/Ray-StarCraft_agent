@@ -34,7 +34,7 @@ DEFAULT_CONFIG = {
     # Entropy coefficient
     "entropy_weight": -0.01,
     # Whether to place workers on GPUs
-    "use_gpu_for_workers": False,
+    "use_gpu_for_workers": torch.cuda.is_available(),
     # Model and preprocessor options
     "model": {
             "custom_preprocessor": "sc_prep",
