@@ -50,8 +50,8 @@ if __name__ == "__main__":
                     "run" : 'SC_A3C',
                     "env" : 'sc2',
                     "trial_resources" : {
-                        'cpu' : args.num_cpus,
-                        'gpu' : args.num_gpus
+                        'cpus' : args.num_cpus,
+                        'gpus' : args.num_gpus
                     },
                     "config": dict(args.config, env=args.env),
                 }
