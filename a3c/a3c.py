@@ -16,7 +16,6 @@ from a3c.evaluator import A3CEvaluator, RemoteA3CEvaluator, GPURemoteA3CEvaluato
 
 
 DEFAULT_CONFIG = {
-    'cuda' : torch.cuda.is_available(),
     # Number of workers (excluding master)
     "num_workers": 1,
     # Size of rollout batch
@@ -34,7 +33,7 @@ DEFAULT_CONFIG = {
     # Entropy coefficient
     "entropy_weight": -0.01,
     # Whether to place workers on GPUs
-    "use_gpu_for_workers": torch.cuda.is_available(),
+    "use_gpu_for_workers": False,
     # Model and preprocessor options
     "model": {
             "custom_preprocessor": "sc_prep",

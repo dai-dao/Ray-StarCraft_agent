@@ -66,7 +66,7 @@ class FullyConv(object):
         self.flat_specs = flat_specs_sv
         self.dtype = torch.FloatTensor
         self.atype = torch.LongTensor
-        if config['cuda']:
+        if torch.cuda.is_available():
             self.dtype = torch.cuda.FloatTensor
             self.atype = torch.cuda.LongTensor
 
@@ -87,6 +87,7 @@ class FullyConv(object):
         self.fc = nn.DataParallel(nn.Sequential(
                 self._linear_init(43*64*64, 256),
                 nn.ReLU(True)))
+     
         self.value = nn.DataParallel(nn.Linear(in_features=256, out_features=1))
         self.fn_out = self._non_spatial_outputs(256, NUM_FUNCTIONS)
         self.non_spatial_outputs = self._init_non_spatial()
