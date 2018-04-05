@@ -49,10 +49,7 @@ if __name__ == "__main__":
                 'experiment_name': {
                     "run" : 'SC_A3C',
                     "env" : 'sc2',
-                    "trial_resources" : {
-                        'cpus' : args.num_cpus,
-                        'gpus' : args.num_gpus
-                    },
+                    "trial_resources" : resources_to_json(args.trial_resources),
                     "config": dict(args.config, env=args.env),
                 }
             }
