@@ -51,7 +51,7 @@ if __name__ == "__main__":
                     "env" : 'sc2',
                     "trial_resources" : {
                         'cpu' : 2,
-                        'gpu' : 0
+                        'gpu' : 1
                     },
                     "config": dict(args.config, env=args.env),
                 }
