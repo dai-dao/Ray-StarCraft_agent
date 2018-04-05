@@ -2,5 +2,5 @@
 
 ## To run:
 ```python
-python test.py --config '{"num_workers": 8}'
+python test.py --config '{"num_workers": 8}' --num-cpus 8
 ```

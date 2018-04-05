@@ -25,10 +25,10 @@ parser.add_argument(
     "--redis-address", default=None, type=str,
     help="The Redis address of the cluster.")
 parser.add_argument(
-    "--num-cpus", default=None, type=int,
+    "--num-cpus", default=2, type=int,
     help="Number of CPUs to allocate to Ray.")
 parser.add_argument(
-    "--num-gpus", default=None, type=int,
+    "--num-gpus", default=1, type=int,
     help="Number of GPUs to allocate to Ray.")
 parser.add_argument(
     "--experiment-name", default="default", type=str,
@@ -50,8 +50,8 @@ if __name__ == "__main__":
                     "run" : 'SC_A3C',
                     "env" : 'sc2',
                     "trial_resources" : {
-                        'cpu' : 2,
-                        'gpu' : 1
+                        'cpu' : args.num_cpus,
+                        'gpu' : args.num_gpus
                     },
                     "config": dict(args.config, env=args.env),
                 }
