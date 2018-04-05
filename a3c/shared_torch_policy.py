@@ -35,6 +35,7 @@ class SharedTorchPolicy(TorchPolicy):
         self.atype = torch.LongTensor
         self._model = FullyConv(config, supervised=True)
         if self.config['cuda']:
+            print('CUDA-enabled')
             self.dtype = torch.cuda.FloatTensor
             self.atype = torch.cuda.LongTensor
             self._model.cuda()

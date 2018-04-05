@@ -60,7 +60,6 @@ class StarCraft(gym.Env):
         return self.env.reset()[0]
 
     def step(self, action):
-        print('STEP')
         pysc2_action = actions_to_pysc2(action, self.size_px)[0]
         ob_raw = self.env.step([pysc2_action])[0]
         return ob_raw, ob_raw.reward, ob_raw.last(), {}
