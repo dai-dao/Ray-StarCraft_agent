@@ -45,7 +45,7 @@ class TorchPolicy(Policy):
             self._backward(samples)
             # Note that return values are just references;
             # calling zero_grad will modify the values
-            return [p.grad.data.numpy() for p in self._model.get_trainable_params()], {}
+            return [p.grad.data.cpu().numpy() for p in self._model.get_trainable_params()], {}
 
 
     def model_update(self, batch):
