@@ -1,33 +1,61 @@
 import ray
-from ray.rllib.optimizers.local_sync_replay import LocalSyncReplayOptimizer
-from ray.rllib.optimizers.apex_optimizer import ApexOptimizer
+from ray.rllib.models import ModelCatalog
+from ray.rllib.models.preprocessors import Preprocessor
+from ray.tune.registry import register_env
+from ray.tune.config_parser import make_parser, resources_to_json
+from ray.tune import register_trainable, run_experiments
 
-import gym
+from a3c.preprocessor import StarCraftPreprocessor
+from env import StarCraft
+from a3c.a3c import A3CAgent
 
-from evaluator import AgentEvaluator
-from rllib_agent import DEFAULT_CONFIG as rainbow_config
-from ray.rllib.utils.atari_wrappers import wrap_deepmind
+import argparse
+import torch
+import sys
 
 
-if __name__ == '__main__':
+parser = make_parser(
+    formatter_class=argparse.RawDescriptionHelpFormatter,
+    description="Train a reinforcement learning agent.",
+    epilog="EXAMPLE_USAGE")
+
+
+# See also the base parser definition in ray/tune/config_parser.py
+parser.add_argument(
+    "--redis-address", default=None, type=str,
+    help="The Redis address of the cluster.")
+parser.add_argument(
+    "--num-cpus", default=None, type=int,
+    help="Number of CPUs to allocate to Ray.")
+parser.add_argument(
+    "--num-gpus", default=None, type=int,
+    help="Number of GPUs to allocate to Ray.")
+parser.add_argument(
+    "--experiment-name", default="default", type=str,
+    help="Name of the subdirectory under `local_dir` to put results in.")
+parser.add_argument(
+    "--env", default=None, type=str, help="The gym environment to use.")
+
+
+ModelCatalog.register_custom_preprocessor("sc_prep", StarCraftPreprocessor)
+register_env("sc2", lambda config: StarCraft(config))
+register_trainable("SC_A3C", A3CAgent)
+
+
+if __name__ == "__main__":
+    args = parser.parse_args(sys.argv[1:])
+
+    experiments = {
+                'experiment_name': {
+                    "run" : 'SC_A3C',
+                    "env" : 'sc2',
+                    "trial_resources" : {
+                        'cpu' : 2,
+                        'gpu' : 0
+                    },
+                    "config": dict(args.config, env=args.env),
+                }
+            }
     ray.init()
-    env_creator = lambda env_config: gym.make("PongNoFrameskip-v4")
-    # optimizer = LocalSyncReplayOptimizer.make(
-    #     AgentEvaluator, [rainbow_config, env_creator], 0, {})
-## Uncomment to use the Ape-X optimizer with 8 workers
-    optimizer = ApexOptimizer.make(
-        AgentEvaluator, [rainbow_config, env_creator], 3, {})
-    last_target_update = 0
-    i = 0
-    while optimizer.num_steps_sampled < 100000:
-        i += 1
-        print("== optimizer step {} ==".format(i))
-        optimizer.step()
-        if optimizer.num_steps_sampled - last_target_update > 1000:
-            last_target_update = optimizer.num_steps_sampled
-            optimizer.local_evaluator.update_target()
-        print("optimizer stats", optimizer.stats())
-        print("local evaluator stats", optimizer.local_evaluator.stats())
-        for ev in optimizer.remote_evaluators[:1]:
-            print("remote evaluator stats", ray.get(ev.stats.remote()))
-        print()
+    run_experiments(experiments)
+    
