@@ -56,6 +56,6 @@ if __name__ == "__main__":
                     "config": dict(args.config, env=args.env),
                 }
             }
-    ray.init()
+    ray.init(num_gpus=1)
     run_experiments(experiments)
     
