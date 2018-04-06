@@ -74,21 +74,21 @@ class FullyConv(object):
         self.embed_minimap = self._init_embed_obs(self.minimap_specs, self._embed_spatial)
         self.embed_flat = self._init_embed_obs(self.flat_specs, self._embed_flat)
 
-        self.screen_out = nn.DataParallel(nn.Sequential(
+        self.screen_out = nn.Sequential(
                 self._conv2d_init(20, 8, stride=1, kernel_size=5, padding=2),
                 nn.ReLU(True),
                 self._conv2d_init(8, 16, stride=1, kernel_size=3, padding=1),
-                nn.ReLU(True)))
-        self.minimap_out = nn.DataParallel(nn.Sequential(
+                nn.ReLU(True))
+        self.minimap_out = nn.Sequential(
                 self._conv2d_init(6, 12, stride=1, kernel_size=5, padding=2),
                 nn.ReLU(True),
                 self._conv2d_init(12, 16, stride=1, kernel_size=3, padding=1),
-                nn.ReLU(True)))
-        self.fc = nn.DataParallel(nn.Sequential(
+                nn.ReLU(True))
+        self.fc = nn.Sequential(
                 self._linear_init(43*64*64, 256),
-                nn.ReLU(True)))
+                nn.ReLU(True))
      
-        self.value = nn.DataParallel(nn.Linear(in_features=256, out_features=1))
+        self.value = nn.Linear(in_features=256, out_features=1)
         self.fn_out = self._non_spatial_outputs(256, NUM_FUNCTIONS)
         self.non_spatial_outputs = self._init_non_spatial()
         self.spatial_outputs = self._init_spatial()
@@ -170,15 +170,15 @@ class FullyConv(object):
 
 
     def _spatial_outputs(self, in_):
-        return nn.DataParallel(nn.Sequential(
+        return nn.Sequential(
                     nn.Conv2d(in_channels=in_, out_channels=1, stride=1, kernel_size=1),
                     Flatten(),
-                    nn.Softmax(dim=1)))
+                    nn.Softmax(dim=1))
 
 
     def _non_spatial_outputs(self, in_, out_):
-        return nn.DataParallel(nn.Sequential(nn.Linear(in_, out_),
-                               nn.Softmax(dim=1)))
+        return nn.Sequential(nn.Linear(in_, out_),
+                               nn.Softmax(dim=1))
 
 
     def _conv2d_init(self, in_, out_, stride, kernel_size, padding):
@@ -186,14 +186,14 @@ class FullyConv(object):
         conv = nn.Conv2d(in_, out_, stride=stride, 
                                 kernel_size=kernel_size, padding=padding)
         conv.weight.data.mul_(relu_gain)
-        return nn.DataParallel(conv)
+        return conv
 
 
     def _linear_init(self, in_, out_):
         relu_gain = nn.init.calculate_gain('relu')
         linear = nn.Linear(in_, out_)
         linear.weight.data.mul_(relu_gain)
-        return nn.DataParallel(linear)
+        return linear
 
 
     def _init_embed_obs(self, spec, embed_fn):
@@ -206,9 +206,9 @@ class FullyConv(object):
             if s.type == features.FeatureType.CATEGORICAL:
                 dims = dims = np.round(np.log2(s.scale)).astype(np.int32).item()
                 dims = max(dims, 1)
-                sequence = nn.DataParallel(nn.Sequential(
+                sequence = nn.Sequential(
                             embed_fn(s.scale, dims), 
-                            nn.ReLU(True)))
+                            nn.ReLU(True))
                 out_sequence[s.index] = sequence
         return out_sequence
 
