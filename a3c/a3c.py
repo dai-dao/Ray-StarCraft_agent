@@ -60,6 +60,7 @@ TrainingResult = namedtuple("TrainingResult", [
     "value_loss_mean", 
     "entropy_loss_mean",
     "time_this_iter_s"])
+TrainingResult.__new__.__defaults__ = (None,) * len(TrainingResult._fields)
 
 
 class A3CAgent(Agent):
