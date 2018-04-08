@@ -8,7 +8,7 @@ from pysc2.lib import features
 
 import numpy as np
 
-from a3c.preprocessor import is_spatial_action, NUM_FUNCTIONS
+from a3c.preprocessor import is_spatial_action, NUM_FUNCTIONS, FLAT_FEATURES
 from a3c.preprocessor import screen_specs_sv, minimap_specs_sv, flat_specs_sv
 
 
@@ -60,10 +60,11 @@ class FullyConv(object):
         if not supervised:
             self.screen_specs = features.SCREEN_FEATURES
             self.minimap_specs = features.MINIMAP_FEATURES
+            self.flat_specs = FLAT_FEATURES
         else:
             self.screen_specs = screen_specs_sv
             self.minimap_specs = minimap_specs_sv
-        self.flat_specs = flat_specs_sv
+            self.flat_specs = flat_specs_sv
         self.dtype = torch.FloatTensor
         self.atype = torch.LongTensor
         if torch.cuda.is_available():
