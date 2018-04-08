@@ -6,11 +6,11 @@ import numpy as np
 import pickle
 import os
 import torch
+from collections import namedtuple
 
 import ray
 from ray.rllib.agent import Agent
 from ray.rllib.optimizers import AsyncOptimizer
-from ray.tune.result import TrainingResult
 
 from a3c.evaluator import A3CEvaluator, RemoteA3CEvaluator, GPURemoteA3CEvaluator
 
@@ -52,6 +52,16 @@ DEFAULT_CONFIG = {
 }
 
 
+TrainingResult = namedtuple("TrainingResult", [
+    "episode_reward_mean",
+    "episode_len_mean",
+    "timesteps_this_iter",
+    "total_loss_mean",
+    "value_loss_mean", 
+    "entropy_loss_mean"])
+
+
+
 class A3CAgent(Agent):
     _agent_name = "SC_A3C"
     _default_config = DEFAULT_CONFIG
@@ -82,22 +92,39 @@ class A3CAgent(Agent):
     def _fetch_metrics_from_remote_evaluators(self):
         episode_rewards = []
         episode_lengths = []
+        total_loss = []
+        value_loss = []
+        entropy_loss = []
         metric_lists = [a.get_completed_rollout_metrics.remote()
                         for a in self.remote_evaluators]
-        for metrics in metric_lists:
+        rollout_metrics = [m[0] for m in metric_lists]
+        loss_metrics = [m[1] for m in metric_lists]
+                        
+        for metrics in loss_metrics:
+            for update in ray.get(metrics):
+                total_loss.append(update.total_loss)
+                value_loss.append(update.value_loss)
+                entropy_loss.append(update.entropy_loss)
+        for metrics in rollout_metrics:
             for episode in ray.get(metrics):
                 episode_lengths.append(episode.episode_length)
                 episode_rewards.append(episode.episode_reward)
-        avg_reward = (
-            np.mean(episode_rewards) if episode_rewards else float('nan'))
-        avg_length = (
-            np.mean(episode_lengths) if episode_lengths else float('nan'))
+        avg_reward = (np.mean(episode_rewards) if episode_rewards \
+                                                else float('nan'))
+        avg_length = (np.mean(episode_lengths) if episode_lengths \
+                                                else float('nan'))
         timesteps = np.sum(episode_lengths) if episode_lengths else 0
+        avg_total_loss = np.mean(total_loss)
+        avg_entropy_loss = np.mean(entropy_loss)
+        avg_value_loss = np.mean(value_loss)
+
         result = TrainingResult(
             episode_reward_mean=avg_reward,
             episode_len_mean=avg_length,
             timesteps_this_iter=timesteps,
-            info={})
+            total_loss_mean=avg_total_loss,
+            value_loss_mean=avg_value_loss, 
+            entropy_loss_mean=avg_entropy_loss)
         return result
 
 

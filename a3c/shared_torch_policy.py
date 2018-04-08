@@ -2,6 +2,7 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
 
+from collections import namedtuple
 import numpy as np
 import torch
 from torch.autograd import Variable
@@ -13,6 +14,10 @@ from a3c.torch_policy import TorchPolicy
 from a3c.preprocessor import stack_ndarray_dicts, flatten_first_dims_dict, \
                             stack_and_flatten_actions, flatten_first_dims, \
                             mask_unused_argument_samples
+
+
+Metric = namedtuple(
+    "Metric", ["total_loss", "value_loss", "entropy_loss"])
 
 
 def convert_batch(trajectory):
@@ -30,6 +35,7 @@ class SharedTorchPolicy(TorchPolicy):
 
     def __init__(self, config, **kwargs):
         super(SharedTorchPolicy, self).__init__(config, **kwargs)
+        self.metrics = []
         # Config network
         self.dtype = torch.FloatTensor
         self.atype = torch.LongTensor
@@ -118,6 +124,12 @@ class SharedTorchPolicy(TorchPolicy):
         return values, log_probs, entropy
 
 
+    def get_metrics(self):
+        out = self.metrics.copy()
+        self.metrics.clear()
+        return out
+
+
     def _backward(self, batch):
         obs, actions, advs, returns = convert_batch(batch)
         values, ac_logprobs, entropy = self._evaluate(obs, actions)
@@ -125,18 +137,17 @@ class SharedTorchPolicy(TorchPolicy):
         returns_var = Variable(self.dtype(returns))
         # Loss calculation
         policy_loss = -(advs_var * ac_logprobs).mean()
-        value_loss = (returns_var - values).pow(2).mean()
-        loss = policy_loss + value_loss * self.config['value_loss_weight'] \
-                - entropy * self.config['entropy_weight']
-
-        print('SHAPE', advs_var.size())
-        print('LOSS', loss[0])
-        
+        value_loss = (returns_var - values).pow(2).mean() * self.config['value_loss_weight']
+        entropy_loss = entropy * self.config['entropy_weight']
+        loss = policy_loss + value_loss - entropy_loss
         # Backward and clip grad
         self.optimizer.zero_grad()
         loss.backward()
         torch.nn.utils.clip_grad_norm(self._model.get_trainable_params(), \
                                       self.config["grad_clip"])
+        self.metrics.append(Metric(loss.cpu().data.numpy()[0], \
+                                   value_loss.cpu().data.numpy()[0], \
+                                   entropy_loss.cpu().data.numpy()[0]))
 
     
     def _make_var_actions(self, actions):
