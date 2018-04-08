@@ -58,8 +58,8 @@ TrainingResult = namedtuple("TrainingResult", [
     "timesteps_this_iter",
     "total_loss_mean",
     "value_loss_mean", 
-    "entropy_loss_mean"])
-
+    "entropy_loss_mean",
+    "time_this_iter_s"])
 
 
 class A3CAgent(Agent):
@@ -114,7 +114,6 @@ class A3CAgent(Agent):
         avg_total_loss = np.mean(total_loss)
         avg_entropy_loss = np.mean(entropy_loss)
         avg_value_loss = np.mean(value_loss)
-
         result = TrainingResult(
             episode_reward_mean=avg_reward,
             episode_len_mean=avg_length,
