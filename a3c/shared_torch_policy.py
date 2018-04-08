@@ -128,6 +128,9 @@ class SharedTorchPolicy(TorchPolicy):
         value_loss = (returns_var - values).pow(2).mean()
         loss = policy_loss + value_loss * self.config['value_loss_weight'] \
                 - entropy * self.config['entropy_weight']
+
+        print('LOSS', loss)
+        
         # Backward and clip grad
         self.optimizer.zero_grad()
         loss.backward()

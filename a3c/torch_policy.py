@@ -19,6 +19,7 @@ class TorchPolicy(Policy):
 
 
     def apply_gradients(self, grads):
+        print('APPLY GRADIENTSS')
         self.optimizer.zero_grad()
         for g, p in zip(grads, self._model.get_trainable_params()):
             p.grad = Variable(torch.from_numpy(g))
@@ -52,6 +53,7 @@ class TorchPolicy(Policy):
         """
         Implements compute + apply
         """
+        print('MODEL UPDATE')
         with self.lock:
             self._backward(batch)
             self.optimizer.step()
