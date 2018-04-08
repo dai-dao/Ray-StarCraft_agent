@@ -111,7 +111,7 @@ class StarCraftPreprocessor(Preprocessor):
 
     # RAY API
     def transform(self, ob):
-        return stack_ndarray_dicts([self._preprocess_obs_sv(ob.observation)])     
+        return stack_ndarray_dicts([self._preprocess_obs(ob.observation)])     
 
 
     def preprocess_obs(self, obs_list):
