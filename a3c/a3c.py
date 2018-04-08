@@ -97,18 +97,15 @@ class A3CAgent(Agent):
         entropy_loss = []
         metric_lists = [a.get_completed_rollout_metrics.remote()
                         for a in self.remote_evaluators]
-        rollout_metrics = [m[0] for m in metric_lists]
-        loss_metrics = [m[1] for m in metric_lists]
-                        
-        for metrics in loss_metrics:
-            for update in ray.get(metrics):
+        for metrics in metric_lists:
+            rollout_metric, loss_metric = ray.get(metrics)
+            for update in loss_metric:
                 total_loss.append(update.total_loss)
                 value_loss.append(update.value_loss)
                 entropy_loss.append(update.entropy_loss)
-        for metrics in rollout_metrics:
-            for episode in ray.get(metrics):
-                episode_lengths.append(episode.episode_length)
-                episode_rewards.append(episode.episode_reward)
+            for rollout in rollout_metric:            
+                episode_lengths.append(rollout.episode_length)
+                episode_rewards.append(rollout.episode_reward)
         avg_reward = (np.mean(episode_rewards) if episode_rewards \
                                                 else float('nan'))
         avg_length = (np.mean(episode_lengths) if episode_lengths \
