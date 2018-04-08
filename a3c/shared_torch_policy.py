@@ -33,7 +33,7 @@ class SharedTorchPolicy(TorchPolicy):
         # Config network
         self.dtype = torch.FloatTensor
         self.atype = torch.LongTensor
-        self._model = FullyConv(config, supervised=True)
+        self._model = FullyConv(config)
         if torch.cuda.is_available():
             print('CUDA-enabled')
             self.dtype = torch.cuda.FloatTensor
