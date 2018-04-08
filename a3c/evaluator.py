@@ -9,6 +9,7 @@ from ray.rllib.utils.sampler import AsyncSampler
 from ray.rllib.utils.process_rollout import process_rollout
 
 from a3c.shared_torch_policy import SharedTorchPolicy
+from utils.sampler import MyAsyncSampler
 
 
 class MyNoFilter(Filter):
@@ -45,7 +46,7 @@ class A3CEvaluator(PolicyEvaluator):
         # Technically not needed when not remote
         self.filter = MyNoFilter()
         # Observation sampler
-        self.sampler = AsyncSampler(self.env, self.policy, \
+        self.sampler = MyAsyncSampler(self.env, self.policy, \
                                     self.filter, config["batch_size"])
         # Misc
         if start_sampler and self.sampler.async:
