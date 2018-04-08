@@ -165,7 +165,7 @@ class FullyConv(object):
         out = {}
         for arg_type in actions.TYPES:
             if is_spatial_action[arg_type.name]:
-                out[arg_type.id] = self._spatial_outputs(43)
+                out[arg_type.id] = self._spatial_outputs(78)
         return out
 
 
