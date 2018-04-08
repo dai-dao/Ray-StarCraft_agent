@@ -77,10 +77,12 @@ class A3CEvaluator(PolicyEvaluator):
 
 
     def get_weights(self):
+        print('GET WEIGHTS')
         return self.policy.get_weights()
 
 
     def set_weights(self, params):
+        print('SET WEIGHTS')
         self.policy.set_weights(params)
 
 
