@@ -11,6 +11,7 @@ from collections import namedtuple
 import ray
 from ray.rllib.agent import Agent
 from ray.rllib.optimizers import AsyncOptimizer
+from ray.tune.result import TrainingResult
 
 from a3c.evaluator import A3CEvaluator, RemoteA3CEvaluator, GPURemoteA3CEvaluator
 
@@ -50,35 +51,6 @@ DEFAULT_CONFIG = {
         'step_mul' : 8
     },
 }
-
-
-TrainingResult = namedtuple("TrainingResult", [
-    "episode_reward_mean",
-    "episode_len_mean",
-    "timesteps_this_iter",
-    "total_loss_mean",
-    "value_loss_mean", 
-    "entropy_loss_mean",
-    "time_this_iter_s",
-    "timesteps_total",
-    "done",
-    "info",
-    "episodes_total",
-    "mean_accuracy",
-    "mean_validation_accuracy",
-    "mean_loss",
-    "neg_mean_loss",
-    "experiment_id",
-    "training_iteration",
-    "time_total_s",
-    "pid",
-    "date",
-    "timestamp",
-    "hostname",
-    "node_ip",
-    "config"
-])
-TrainingResult.__new__.__defaults__ = (None,) * len(TrainingResult._fields)
 
 
 class A3CAgent(Agent):
