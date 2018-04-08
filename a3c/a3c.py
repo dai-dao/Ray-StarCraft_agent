@@ -29,9 +29,9 @@ DEFAULT_CONFIG = {
     # Learning rate
     "lr": 0.0001,
     # Value Function Loss coefficient
-    "value_loss_weight": 0.5,
+    "value_loss_weight": 1.0,
     # Entropy coefficient
-    "entropy_weight": -0.01,
+    "entropy_weight": 0.01,
     # Whether to place workers on GPUs
     "use_gpu_for_workers": False,
     # Model and preprocessor options
