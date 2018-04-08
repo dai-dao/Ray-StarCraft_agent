@@ -86,7 +86,7 @@ class FullyConv(object):
                 self._conv2d_init(16, 32, stride=1, kernel_size=3, padding=1),
                 nn.ReLU(True))
         self.fc = nn.Sequential(
-                self._linear_init(78*32*32, 256),
+                self._linear_init(78*64*64, 256),
                 nn.ReLU(True))
         self.value = nn.Linear(in_features=256, out_features=1)
         self.fn_out = self._non_spatial_outputs(256, NUM_FUNCTIONS)
