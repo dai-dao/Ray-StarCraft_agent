@@ -59,7 +59,25 @@ TrainingResult = namedtuple("TrainingResult", [
     "total_loss_mean",
     "value_loss_mean", 
     "entropy_loss_mean",
-    "time_this_iter_s"])
+    "time_this_iter_s",
+    "timesteps_total",
+    "done",
+    "info",
+    "episodes_total",
+    "mean_accuracy",
+    "mean_validation_accuracy",
+    "mean_loss",
+    "neg_mean_loss",
+    "experiment_id",
+    "training_iteration",
+    "time_total_s",
+    "pid",
+    "date",
+    "timestamp",
+    "hostname",
+    "node_ip",
+    "config"
+])
 TrainingResult.__new__.__defaults__ = (None,) * len(TrainingResult._fields)
 
 
@@ -121,7 +139,8 @@ class A3CAgent(Agent):
             timesteps_this_iter=timesteps,
             total_loss_mean=avg_total_loss,
             value_loss_mean=avg_value_loss, 
-            entropy_loss_mean=avg_entropy_loss)
+            entropy_loss_mean=avg_entropy_loss,
+            info={})
         return result
 
 
